@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Newsletter</title>
+</head>
+<body>
+    <h1>Department Newsletter</h1>
+    
+    <form method="GET" action="{% url 'index' %}">
+        <select name="department">
+            <option value="">Select Department</option>
+            {% for department in departments %}
+                <option value="{{ department.id }}">{{ department.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+    
+    <a href="{% url 'create_article' %}">Create New Article</a>
+    
+    <ul>
+        {% for article in articles %}
+            <li>
+                <h2>{{ article.title }}</h2>
+                <p>{{ article.content }}</p>
+                <p>Category: {{ article.category }}</p>
+                <p>Author: {{ article.author.username }}</p>
+                <p>Published on: {{ article.created_at }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

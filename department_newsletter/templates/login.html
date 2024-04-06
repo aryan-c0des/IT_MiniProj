@@ -4,11 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+        form {
+            text-align: center;
+            margin-top: 20px;
+            max-width: 300px; /* Added max-width */
+            margin-left: auto; /* Center the form horizontally */
+            margin-right: auto; /* Center the form horizontally */
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            text-align: left; /* Align label text to the left */
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%; /* Changed to a percentage width */
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%; /* Make the button fill the width */
+            box-sizing: border-box;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            font-size: 16px;
+            color: #007bff;
+            width: 100%; /* Make the link fill the width */
+            box-sizing: border-box;
+        }
+        .error-message {
+            text-align: center; /* Center the error message */
+            color: red;
+            margin-top: 20px; /* Adjust margin-top to create space between the form and the error message */
+        }
+    </style>
 </head>
 <body>
     <h1>Login</h1>
     {% if error %}
-        <p>{{ error }}</p>
+        <p class="error-message">{{ error }}</p>
     {% endif %}
     <form method="post">
         {% csrf_token %}
@@ -18,6 +83,6 @@
         <input type="password" id="password" name="password"><br><br>
         <button type="submit">Login</button>
     </form>
-    <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+    <a href="{% url 'signup' %}">Don't have an account? Sign up here</a>
 </body>
 </html>

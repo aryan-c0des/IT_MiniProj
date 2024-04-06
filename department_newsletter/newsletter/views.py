@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import UserCreationForm
 from .models import Article, Department
 from .forms import SignUpForm, ArticleForm
+from .utils import send_new_article_notification
+from django.contrib.auth import authenticate, login
 
 def login_view(request):
     if request.method == 'POST':
@@ -25,7 +25,7 @@ def signup(request):
             user = form.save()
             department_name = form.cleaned_data.get('department')
             department, created = Department.objects.get_or_create(name=department_name)
-            user.profile.department = department
+            user.department = department
             user.save()
             login(request, user)
             return redirect('index')
@@ -33,14 +33,29 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
+from django.shortcuts import render
+from .models import Article, Department
+
 def index(request):
-    articles = Article.objects.all().order_by('-created_at')
-    departments = Department.objects.all()
-    if 'department' in request.GET:
-        department_id = request.GET['department']
-        if department_id:
-            articles = articles.filter(author__profile__department=department_id)
-    return render(request, 'index.html', {'articles': articles, 'departments': departments})
+    selected_department = request.GET.get('department')
+    search_query = request.GET.get('search')
+    sort_order = request.GET.get('sort')  # Get the selected sort order
+    articles = Article.objects.all()
+    departments = Department.objects.all()  # Retrieve all departments
+
+    if selected_department:
+        articles = articles.filter(department_id=selected_department)
+
+    if search_query:
+        articles = articles.filter(title__icontains=search_query)
+
+    if sort_order == 'oldest':  # If oldest sort order is selected
+        articles = articles.order_by('created_at')
+    elif sort_order == 'newest':  # If newest sort order is selected
+        articles = articles.order_by('-created_at')
+
+    return render(request, 'index.html', {'articles': articles, 'selected_department': selected_department, 'search_query': search_query, 'departments': departments})
+
 
 def create_article(request):
     if request.method == 'POST':
@@ -48,7 +63,11 @@ def create_article(request):
         if form.is_valid():
             article = form.save(commit=False)
             article.author = request.user
+            department_name = form.cleaned_data.get('department')
+            department, created = Department.objects.get_or_create(name=department_name)
+            article.department = department
             article.save()
+            send_new_article_notification(article)  # Send email notification
             return redirect('index')
     else:
         form = ArticleForm()

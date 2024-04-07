@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Article, Department
 from .forms import SignUpForm, ArticleForm
 from .utils import send_new_article_notification
@@ -33,26 +34,35 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
-from django.shortcuts import render
-from .models import Article, Department
-
 def index(request):
     selected_department = request.GET.get('department')
     search_query = request.GET.get('search')
     sort_order = request.GET.get('sort')  # Get the selected sort order
-    articles = Article.objects.all()
+    articles_list = Article.objects.all()
     departments = Department.objects.all()  # Retrieve all departments
 
     if selected_department:
-        articles = articles.filter(department_id=selected_department)
+        articles_list = articles_list.filter(department_id=selected_department)
 
     if search_query:
-        articles = articles.filter(title__icontains=search_query)
+        articles_list = articles_list.filter(title__icontains=search_query)
 
     if sort_order == 'oldest':  # If oldest sort order is selected
-        articles = articles.order_by('created_at')
+        articles_list = articles_list.order_by('created_at')
     elif sort_order == 'newest':  # If newest sort order is selected
-        articles = articles.order_by('-created_at')
+        articles_list = articles_list.order_by('-created_at')
+
+    paginator = Paginator(articles_list, 4)  # Show 4 articles per page
+
+    page = request.GET.get('page')
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        articles = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        articles = paginator.page(paginator.num_pages)
 
     return render(request, 'index.html', {'articles': articles, 'selected_department': selected_department, 'search_query': search_query, 'departments': departments})
 

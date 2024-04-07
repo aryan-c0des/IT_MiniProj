@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html>
 <head>
     <title>New Article Notification</title>
@@ -10,5 +10,61 @@
     <p>Author: {{ author }}</p>
     <p>Published On: {{ published_on }}</p>
     <p>Log in to check it out!</a>.</p>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Article Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('website_background.jpg'); 
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .footer a {
+            color: #007bff; /* Department color theme */
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>New Article Published!</h2>
+        <p>Title: {{ title }}</p>
+        <p>Department: {{ department }}</p>
+        <p>Author: {{ author }}</p>
+        <p>Published On: {{ published_on }}</p>
+        <p>Log in to check it out!</p>
+        <div class="footer">
+            <a href="#">Log in</a> to check it out!
+        </div>
+    </div>
 </body>
 </html>

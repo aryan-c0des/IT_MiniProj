@@ -7,28 +7,65 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            background-image: url('https://free4kwallpapers.com/uploads/originals/2019/07/10/topography-wallpaper.jpg');
+            background-size: cover;
+            background-position: center;
         }
-        h1 {
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: right;
+            padding: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            margin: 0;
+            color: #333;
+        }
+        
+        .logout-link {
+            text-decoration: underline;
+            color: #28a745;
+            cursor: pointer;
+        }
+        
+        .logout-link:hover {
+            color: #218838;
+        }
+        
+        .title {
             color: #333;
             text-align: center;
             margin-top: 20px;
         }
-        form {
+        
+        .form-container {
             text-align: center;
             margin-top: 20px;
         }
-        select {
+        
+        .form-container input[type="text"],
+        .form-container select {
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
             margin-right: 10px;
         }
-        button {
+        
+        .form-container button {
             padding: 10px 20px;
             font-size: 16px;
             background-color: #007bff;
@@ -38,10 +75,12 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        button:hover {
+        
+        .form-container button:hover {
             background-color: #0056b3;
         }
-        a {
+        
+        .create-link {
             display: block;
             text-align: center;
             margin: 20px auto;
@@ -54,84 +93,128 @@
             transition: background-color 0.3s ease;
             width: 200px;
         }
-        a:hover {
+        
+        .create-link:hover {
             background-color: #218838;
         }
-        .logout-link {
-            display: inline;
-            text-decoration: underline;
-            font-size: 16px;
-            color: #28a745;
-            margin-right: 20px;
-            cursor: pointer;
-        }
-        ul {
+        
+        .articles {
             list-style-type: none;
             padding: 0;
             margin: 0;
         }
-        li {
-            background-color: #fff;
+        
+        .article {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background for each article */
             padding: 20px;
             margin: 10px 0;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        h2 {
+        
+        .article h2 {
             color: #333;
         }
-        p {
+        
+        .article p {
             color: #666;
             margin: 5px 0;
+        } 
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .step-links {
+            display: inline-block;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .step-links a {
+            padding: 5px 10px;
+            text-decoration: none;
+            color: #ccc;
+            margin-right: 5px;
+        }
+
+        .current {
+            font-weight: bold;
+            color: #007bff;
         }
     </style>
 </head>
 <body>
-    <div style="text-align: right; padding: 10px;">
-        <!-- Welcome message -->
-        <p>Welcome, {{ user.username }}!</p>
-        <!-- Logout button -->
-        <p class="logout-link" onclick="window.location.href='{% url 'login' %}'">Logout</p>
-    </div>
-    
-    <h1>Department Newsletter</h1>
-    
-    <!-- Search bar -->
-    <form method="GET" action="{% url 'index' %}" style="text-align: center; margin-top: 20px;">
-        <input type="text" name="search" placeholder="Enter Title to Search" value="{% if search_query %}{{ search_query }}{% endif %}" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px;">
-        <button type="submit" style="padding: 10px 20px; font-size: 16px; background-color: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Search</button>
-    </form>
+    <div class="container">
+        <div class="header">
+            <!-- Welcome message -->
+            <p>Welcome, {{ user.username }}!</p>
+            <!-- Logout button -->
+            <p class="logout-link" onclick="window.location.href='{% url 'login' %}'">Logout</p>
+        </div>
 
-    <form method="GET" action="{% url 'index' %}">
-        <!-- Department filter -->
-        <select name="department" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px;">
-            <option value="" {% if not selected_department %}selected{% endif %}>Select Department</option>
-            {% for department in departments %}
-                <option value="{{ department.id }}" {% if department.id == selected_department %}selected{% endif %}>{{ department.name }}</option>
+        <h1 class="title">Department Newsletter</h1>
+
+        <!-- Search bar -->
+        <div class="form-container">
+            <form method="GET" action="{% url 'index' %}">
+                <input type="text" name="search" placeholder="Enter Title to Search" value="{% if search_query %}{{ search_query }}{% endif %}">
+                <button type="submit">Search</button>
+            </form>
+
+            <!-- Filter form -->
+            <form method="GET" action="{% url 'index' %}">
+                <select name="department">
+                    <option value="" {% if not selected_department %}selected{% endif %}>Select Department</option>
+                    {% for department in departments %}
+                        <option value="{{ department.id }}" {% if department.id == selected_department %}selected{% endif %}>{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="sort">
+                    <option value="oldest" {% if sort_order == 'oldest' %}selected{% endif %}>Oldest First</option>
+                    <option value="newest" {% if sort_order == 'newest' %}selected{% endif %}>Newest First</option>
+                </select>
+                <button type="submit">Filter</button>
+                <button type="button" onclick="window.location.href='{% url 'index' %}'">Reset</button>
+            </form>
+        </div>
+
+        <!-- Create new article link -->
+        <a href="{% url 'create_article' %}" class="create-link">Create New Article</a>
+
+        <!-- List of articles -->
+        <ul class="articles">
+            {% for article in articles %}
+                <li class="article">
+                    <h2>{{ article.title }}</h2>
+                    <p>{{ article.content }}</p>
+                    <p>Department: {{ article.department.name }}</p>
+                    <p>Author: {{ article.author.username }}</p>
+                    <p>Published on: {{ article.created_at }}</p>
+                </li>
             {% endfor %}
-        </select>
-        <!-- Sort order dropdown -->
-        <select name="sort" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px;">
-            <option value="oldest" {% if sort_order == 'oldest' %}selected{% endif %}>Oldest First</option>
-            <option value="newest" {% if sort_order == 'newest' %}selected{% endif %}>Newest First</option>
-        </select>
-        <!-- Filter and reset buttons -->
-        <button type="submit">Filter</button>
-        <button type="button" onclick="window.location.href='{% url 'index' %}'">Reset</button>
-    </form>
-    
-    <a href="{% url 'create_article' %}" style="text-align: center; text-decoration: none; font-size: 18px;">Create New Article</a>
-    
-    <ul>
-        {% for article in articles %}
-            <li style="background-color: #fff; padding: 20px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                <h2 style="color: #333;">{{ article.title }}</h2>
-                <p style="color: #666; margin: 5px 0;">{{ article.content }}</p>
-                <p style="color: #666; margin: 5px 0;">Department: {{ article.department.name }}</p>
-                <p style="color: #666; margin: 5px 0;">Author: {{ article.author.username }}</p>
-                <p style="color: #666; margin: 5px 0;">Published on: {{ article.created_at }}</p>
-            </li>
-        {% endfor %}
-    </ul>
+        </ul>
+    </div>
+
+    <!-- Pagination links -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if articles.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ articles.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ articles.number }} of {{ articles.paginator.num_pages }}.
+            </span>
+
+            {% if articles.has_next %}
+                <a href="?page={{ articles.next_page_number }}">next</a>
+                <a href="?page={{ articles.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 </body>
 </html>

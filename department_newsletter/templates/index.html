@@ -166,7 +166,7 @@
 
             <!-- Filter form -->
             <form method="GET" action="{% url 'index' %}">
-                <select name="department">
+                 <select name="department">
                     <option value="" {% if not selected_department %}selected{% endif %}>Select Department</option>
                     {% for department in departments %}
                         <option value="{{ department.id }}" {% if department.id == selected_department %}selected{% endif %}>{{ department.name }}</option>
@@ -175,6 +175,10 @@
                 <select name="sort">
                     <option value="oldest" {% if sort_order == 'oldest' %}selected{% endif %}>Oldest First</option>
                     <option value="newest" {% if sort_order == 'newest' %}selected{% endif %}>Newest First</option>
+                </select>
+                <select name="filter_by">
+                    <option value="">All</option>
+                    <option value="mine" {% if filter_by == 'mine' %}selected{% endif %}>Mine</option>
                 </select>
                 <button type="submit">Filter</button>
                 <button type="button" onclick="window.location.href='{% url 'index' %}'">Reset</button>

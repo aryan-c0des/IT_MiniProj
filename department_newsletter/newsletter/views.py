@@ -38,6 +38,8 @@ def index(request):
     selected_department = request.GET.get('department')
     search_query = request.GET.get('search')
     sort_order = request.GET.get('sort')  # Get the selected sort order
+    filter_by = request.GET.get('filter_by')  # Get the selected filter option
+    user = request.user  # Get the current user
     articles_list = Article.objects.all()
     departments = Department.objects.all()  # Retrieve all departments
 
@@ -52,6 +54,9 @@ def index(request):
     elif sort_order == 'newest':  # If newest sort order is selected
         articles_list = articles_list.order_by('-created_at')
 
+    if filter_by == 'mine':
+        articles_list = articles_list.filter(author=user)  # Filter articles uploaded by the current user
+
     paginator = Paginator(articles_list, 4)  # Show 4 articles per page
 
     page = request.GET.get('page')
@@ -64,8 +69,7 @@ def index(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         articles = paginator.page(paginator.num_pages)
 
-    return render(request, 'index.html', {'articles': articles, 'selected_department': selected_department, 'search_query': search_query, 'departments': departments})
-
+    return render(request, 'index.html', {'articles': articles, 'selected_department': selected_department, 'search_query': search_query, 'departments': departments, 'filter_by': filter_by})
 
 def create_article(request):
     if request.method == 'POST':
